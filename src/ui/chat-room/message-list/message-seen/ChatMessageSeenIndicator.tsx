@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { ChatContext } from "../../../ChatContext";
-import { Chat } from "../../../../app/chat";
+import { Chat } from "@chat";
 import { ChatMessageLineContext } from "../line/ChatMessageLineContext";
 
 export function ChatMessageSeenIndicator() {

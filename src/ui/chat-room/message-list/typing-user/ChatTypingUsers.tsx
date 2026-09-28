@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { ChatContext } from "../../../ChatContext";
-import { Chat } from "../../../../app/chat";
+import { Chat } from "@chat";
 import { Avatar } from "monday-ui-react-core";
 import { getSize, getType } from "../../../mondayUtils";
 import "./ChatTypingUsers.scss";

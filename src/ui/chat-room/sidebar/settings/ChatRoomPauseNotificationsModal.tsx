@@ -6,12 +6,12 @@ import {
   RadioButton,
   Tooltip,
 } from "monday-ui-react-core";
-import NotificationsMuted from "monday-ui-react-core/dist/icons/NotificationsMuted.js";
-import Notifications from "monday-ui-react-core/dist/icons/Notifications.js";
+import { NotificationsMuted } from "monday-ui-react-core/icons";
+import { Notifications } from "monday-ui-react-core/icons";
 import { useContext, useEffect, useState } from "react";
 import { ChatContext } from "../../../ChatContext";
 import { DateTime } from "luxon";
-import { Chat } from "../../../../app/chat";
+import { Chat } from "@chat";
 
 export type ChatRoomPauseNotificationsModalProps = {
   onClose: () => void;

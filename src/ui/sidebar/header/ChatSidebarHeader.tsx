@@ -1,5 +1,5 @@
 import { Button } from 'monday-ui-react-core';
-import Add from 'monday-ui-react-core/dist/icons/Add.js';
+import { Add } from "monday-ui-react-core/icons";
 import { useContext } from 'react';
 import { ChatContext } from '../../ChatContext';
 import { getSize } from '../../mondayUtils';

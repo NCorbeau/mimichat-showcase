@@ -1,5 +1,4 @@
-import useMouseEvents from "beautiful-react-hooks/useMouseEvents";
-import { useState } from "react";
+import { useEffect, useRef, type PointerEvent as ReactPointerEvent } from "react";
 
 type ResizeStickProps = {
     width: number;
@@ -10,32 +9,32 @@ type ResizeStickProps = {
 
 export function ResizeStick({ width, minWidth, direction, onResize }: ResizeStickProps) {
 
-    const { onMouseMove, onMouseUp } = useMouseEvents();
+    const dragRef = useRef<{ startX: number; startWidth: number } | null>(null);
 
-    const [dragInProgress, setDragInProgress] = useState<boolean>(false);
-    const [dragStartX, setDragStartX] = useState<number>(0);
-    const [dragStartWidth, setDragStartWidth] = useState<number>(0);
+    useEffect(() => {
+        const onPointerMove = (event: PointerEvent) => {
+            const drag = dragRef.current;
+            if (!drag) return;
+            const delta = direction === 'left' ? drag.startX - event.clientX : event.clientX - drag.startX;
+            onResize(Math.max(minWidth, drag.startWidth + delta));
+        };
+        const onPointerUp = () => { dragRef.current = null; };
+        window.addEventListener('pointermove', onPointerMove);
+        window.addEventListener('pointerup', onPointerUp);
+        return () => {
+            window.removeEventListener('pointermove', onPointerMove);
+            window.removeEventListener('pointerup', onPointerUp);
+        };
+    }, [direction, minWidth, onResize]);
 
-    onMouseMove((e) => {
-        if (dragInProgress) {
-            const newWidth = dragStartWidth + (direction === 'left' ? dragStartX - e.clientX : e.clientX - dragStartX);
-            onResize(newWidth > minWidth ? newWidth : minWidth);
-        }
-    });
-
-    onMouseUp(() => {
-        setDragInProgress(false);
-    });
-
-    const onMouseDown = (e: React.MouseEvent) => {
-        setDragInProgress(true);
-        setDragStartX(e.clientX);
-        setDragStartWidth(width);
+    const onPointerDown = (event: ReactPointerEvent<HTMLSpanElement>) => {
+        event.preventDefault();
+        dragRef.current = { startX: event.clientX, startWidth: width };
     };
 
     return (
         <div className="h-full w-px bg-border flex-shrink-0">
-            <span onMouseDown={onMouseDown} className="h-full absolute w-3 cursor-ew-resize -translate-x-1.5 z-20"></span>
+            <span onPointerDown={onPointerDown} className="h-full absolute w-3 cursor-ew-resize -translate-x-1.5 z-20"></span>
         </div>
     );
 

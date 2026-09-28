@@ -4,8 +4,8 @@ import { ChatRoomInfobar } from "./ChatRoomInfobar";
 import { ChatRoomCreateForm } from "./ChatRoomCreateForm";
 import { ChatRoomAddMemberForm } from "./ChatRoomAddMemberForm";
 import { IconButton, Skeleton } from "monday-ui-react-core";
-import NavigationChevronLeft from "monday-ui-react-core/dist/icons/NavigationChevronLeft.js";
-import NavigationChevronRight from "monday-ui-react-core/dist/icons/NavigationChevronRight.js";
+import { NavigationChevronLeft } from "monday-ui-react-core/icons";
+import { NavigationChevronRight } from "monday-ui-react-core/icons";
 import { ChatRoomContext } from "../ChatRoomContext";
 
 export function ChatRoomHeader() {

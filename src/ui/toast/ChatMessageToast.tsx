@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { ChatContext } from "../ChatContext";
 import { ChatMessage } from "../../domain";
 
@@ -10,13 +10,15 @@ export function ChatMessageToast({ message }: ChatToastProps) {
 
     const { userById, onChatUsersRequested, onSelectRoom, currentUser, selectedRoom, roomById, pausedNotificationsByRoom } = useContext(ChatContext);
 
-    const [timeoutId, setTimeoutId] = useState<number>(null);
+    const timeoutRef = useRef<number | null>(null);
+    const processedMessageIdRef = useRef<string | null>(null);
     const [lastMessage, setLastMessage] = useState<ChatMessage>(null);
     const [messagesCount, setMessagesCount] = useState<number>(0);
 
     useEffect(() => {
-        if (!message ||
-            message.userId === currentUser?.uid ||
+        if (!message || processedMessageIdRef.current === message.id) return;
+        processedMessageIdRef.current = message.id;
+        if (message.userId === currentUser?.uid ||
             message.createdAt < Date.now() - 5000 ||
             selectedRoom?.id === message.roomId) {
             return;
@@ -27,21 +29,25 @@ export function ChatMessageToast({ message }: ChatToastProps) {
             return;
         }
 
-        if (timeoutId) {
-            clearTimeout(timeoutId);
+        if (timeoutRef.current !== null) {
+            clearTimeout(timeoutRef.current);
         }
 
         setLastMessage(message);
-        setMessagesCount(messagesCount + 1);
+        setMessagesCount(count => count + 1);
 
-        const timeout = setTimeout(() => {
+        timeoutRef.current = window.setTimeout(() => {
             setMessagesCount(0);
             setLastMessage(null);
-        }, 5000) as unknown as number;
-        setTimeoutId(timeout);
+            timeoutRef.current = null;
+        }, 5000);
 
         onChatUsersRequested([message.userId]);
-    }, [message]);
+    }, [message, currentUser?.uid, selectedRoom?.id, pausedNotificationsByRoom, onChatUsersRequested]);
+
+    useEffect(() => () => {
+        if (timeoutRef.current !== null) window.clearTimeout(timeoutRef.current);
+    }, []);
 
 
     if (!lastMessage) {
@@ -50,7 +56,7 @@ export function ChatMessageToast({ message }: ChatToastProps) {
 
     const onGoToMessageRoom = () => {
         const room = roomById.get(lastMessage.roomId);
-        onSelectRoom(room);
+        if (room) onSelectRoom(room);
         setLastMessage(null);
         setMessagesCount(0);
     };
@@ -76,14 +82,14 @@ export function ChatMessageToast({ message }: ChatToastProps) {
                 messagesCount > 1 ?
                     <div className="flex justify-between w-full">
                         <span className="font-bold">{messagesCount} new messages</span>
-                        <span onClick={() => onGoToMessageRoom()} className="text-sm underline cursor-pointer">Go to chat</span>
+                        <button type="button" onClick={onGoToMessageRoom} className="text-sm underline cursor-pointer">Go to chat</button>
                     </div>
                     :
                     <div className="flex flex-col justify-center">
-                        <span className="font-bold">{userById.get(message.userId)?.name ?? ''}</span>
+                        <span className="font-bold">{userById.get(lastMessage.userId)?.name ?? ''}</span>
                         <div className="flex text-sm w-full justify-between">
                             <span className="secondary max-w-64 text-ellipsis overflow-hidden">{getToastMessage()}</span>
-                            <span onClick={() => onGoToMessageRoom()} className="underline cursor-pointer">Read more</span>
+                            <button type="button" onClick={onGoToMessageRoom} className="underline cursor-pointer">Read more</button>
                         </div>
                     </div>
             }

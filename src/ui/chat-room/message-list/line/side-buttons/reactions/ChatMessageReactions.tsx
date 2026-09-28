@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { ChatMessageReaction } from "../../../../../../domain/ChatMessageReaction";
 import { ChatContext } from "../../../../../ChatContext";
-import { Chat } from "../../../../../../app/chat";
+import { Chat } from "@chat";
 import { ChatMessageLineContext } from "../../ChatMessageLineContext";
 import "./ChatMessageReactions.scss";
 

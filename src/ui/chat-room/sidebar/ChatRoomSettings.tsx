@@ -1,11 +1,11 @@
-import Search from "monday-ui-react-core/dist/icons/Search.js";
-import NotificationsMuted from "monday-ui-react-core/dist/icons/NotificationsMuted.js";
-import Invite from "monday-ui-react-core/dist/icons/Invite.js";
-import Logout from "monday-ui-react-core/dist/icons/LogOut.js";
+import { Search } from "monday-ui-react-core/icons";
+import { NotificationsMuted } from "monday-ui-react-core/icons";
+import { Invite } from "monday-ui-react-core/icons";
+import { LogOut as Logout } from "monday-ui-react-core/icons";
 import { Icon } from "monday-ui-react-core";
 import { ChatRoomLeaveModal } from "./settings/ChatRoomLeaveModal";
 import { useState, useRef, useContext } from "react";
-import { Chat } from "../../../app/chat";
+import { Chat } from "@chat";
 import { ChatContext } from "../../ChatContext";
 import { ChatSearchMode } from "../../search/ChatSearch";
 import { ChatRoomPauseNotificationsModal } from "./settings/ChatRoomPauseNotificationsModal";

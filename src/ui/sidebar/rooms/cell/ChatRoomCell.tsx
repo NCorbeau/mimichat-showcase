@@ -3,10 +3,10 @@ import { createPortal } from "react-dom";
 import { ChatMessage, ChatRoom } from "../../../../domain";
 import { ChatContext } from "../../../ChatContext";
 import "./ChatRoomCell.scss";
-import { Chat } from "../../../../app/chat";
+import { Chat } from "@chat";
 import { ChatRoomAvatar } from "../../../chat-room/avatar/ChatRoomAvatar";
 import { Icon, Skeleton, Tooltip } from "monday-ui-react-core";
-import NotificationsMuted from "monday-ui-react-core/dist/icons/NotificationsMuted.js";
+import { NotificationsMuted } from "monday-ui-react-core/icons";
 
 const TITLE_TOOLTIP_DELAY_MS = 50;
 const TITLE_TOOLTIP_OFFSET = 12;
@@ -19,11 +19,12 @@ export function ChatRoomCell({ room }: ChatRoomCellProps) {
 
     const { selectedRoom, onSelectRoom, userById, currentUser, lastMessageByRoom, pausedNotificationsByRoom } = useContext(ChatContext);
 
-    const [lastMessage, setLastMessage] = useState<ChatMessage>(null);
+    const lastMessage: ChatMessage | null = lastMessageByRoom.get(room.id) ?? null;
     const [lastSeen, setLastSeen] = useState<number>(0);
-    const [isUnread, setIsUnread] = useState<boolean>(false);
-    const [notificationsPaused, setNotificationsPaused] = useState<boolean>(false);
-    const [membersLoading, setMembersLoading] = useState<boolean>(true);
+    const isUnread = lastSeen > 0 && !!lastMessage && lastSeen < lastMessage.createdAt && selectedRoom?.id !== room.id;
+    const pausedUntil = pausedNotificationsByRoom.get(room.id);
+    const notificationsPaused = pausedUntil === -1 || (pausedUntil ?? 0) > Date.now();
+    const membersLoading = room.isPrivate && room.members.some(memberId => !userById.has(memberId));
     const [titleTooltipPos, setTitleTooltipPos] = useState<{ x: number; y: number } | null>(null);
     const titleTooltipTimerRef = useRef<number | null>(null);
     const titlePointerRef = useRef({ x: 0, y: 0 });
@@ -34,29 +35,12 @@ export function ChatRoomCell({ room }: ChatRoomCellProps) {
     };
 
     useEffect(() => {
-        setLastMessage(lastMessageByRoom.get(room.id));
-    }, [lastMessageByRoom]);
-
-    useEffect(() => {
+        if (!currentUser?.uid) return;
         const unsubscribe = Chat.streamLastSeen(room.id, currentUser.uid, (lastSeen) => {
             setLastSeen(lastSeen);
         });
         return () => unsubscribe();
-    }, []);
-
-    useEffect(() => {
-        if (!lastSeen || !lastMessage) return;
-        setIsUnread(lastSeen < lastMessage?.createdAt && selectedRoom?.id !== room.id);
-    }, [lastSeen, lastMessage]);
-
-    useEffect(() => {
-        const notificationsPaused = pausedNotificationsByRoom.get(room.id);
-        setNotificationsPaused(notificationsPaused > Date.now() || notificationsPaused === -1);
-    }, [pausedNotificationsByRoom]);
-
-    useEffect(() => {
-        setMembersLoading(room.isPrivate && room.members.some(memberId => !userById.has(memberId)));
-    }, [room.members, userById]);
+    }, [room.id, currentUser?.uid]);
 
     useEffect(() => {
         return () => {

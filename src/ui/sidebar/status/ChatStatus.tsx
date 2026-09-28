@@ -3,7 +3,7 @@ import { ChatContext } from "../../ChatContext";
 import { ChatUserAvatar } from "../../user/ChatUserAvatar";
 import { Dropdown } from "monday-ui-react-core";
 import { ChatUserStatus, ChatUserStatusDisplay } from "../../../domain/ChatStatus";
-import { Chat } from "../../../app/chat";
+import { Chat } from "@chat";
 import { DoNotInterruptStatusSymbol, OfflineStatusSymbol, OnlineStatusSymbol, VacationStatusSymbol } from "./StatusSymbols";
 
 type StatusOption = {

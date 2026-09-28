@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { ChatContext } from "../ChatContext";
-import { Chat } from "../../app/chat";
+import { Chat } from "@chat";
 import { ChatUserAvatar } from "../user/ChatUserAvatar";
 import { Tooltip } from "monday-ui-react-core";
 import { ChatMessage, ChatRoom } from "../../domain";

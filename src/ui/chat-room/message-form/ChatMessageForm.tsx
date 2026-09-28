@@ -1,11 +1,11 @@
 import { IconButton, TextArea } from "monday-ui-react-core";
 import { useContext, useEffect, useRef, useState, KeyboardEvent } from "react";
 import { ChatMessage, ChatUser } from "../../../domain";
-import { Chat } from "../../../app/chat";
+import { Chat } from "@chat";
 import "./ChatMessageForm.scss";
 import { ChatContext } from "../../ChatContext";
-import Emoji from "monday-ui-react-core/dist/icons/Emoji.js";
-import Close from "monday-ui-react-core/dist/icons/Close.js";
+import { Emoji } from "monday-ui-react-core/icons";
+import { Close } from "monday-ui-react-core/icons";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { useKeyDown } from "../../utils/useKeyDown";
@@ -31,6 +31,7 @@ export function ChatMessageForm({ repyingToMessage }: ChatMessageFormProps) {
   const [message, setMessage] = useState("");
   const [showPicker, setShowPicker] = useState(false);
   const [sendingInProgress, setSendingInProgress] = useState(false);
+  const [sendError, setSendError] = useState(false);
   const [suggestionQuery, setSuggestionQuery] = useState<string>("");
   const [suggestionStart, setSuggestionStart] = useState<number | null>(null);
   const [mentionRequest, setMentionRequest] = useState<MentionRequest>(null);
@@ -110,18 +111,24 @@ export function ChatMessageForm({ repyingToMessage }: ChatMessageFormProps) {
   };
 
   const sendMessage = async () => {
-    if (!message || sendingInProgress) {
+    if (!message.trim() || sendingInProgress) {
       return;
     }
 
     setSendingInProgress(true);
-    await addMessage();
-    setMessage("");
-    setShowPicker(false);
-    setSendingInProgress(false);
-    setMentionedUsers(new Map());
-    onMessageReply(null);
-    resetTextareaHeight();
+    setSendError(false);
+    try {
+      await addMessage();
+      setMessage("");
+      setShowPicker(false);
+      setMentionedUsers(new Map());
+      onMessageReply(null);
+      resetTextareaHeight();
+    } catch {
+      setSendError(true);
+    } finally {
+      setSendingInProgress(false);
+    }
   };
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -139,6 +146,7 @@ export function ChatMessageForm({ repyingToMessage }: ChatMessageFormProps) {
   const onFormChange = (value: string) => {
     const processedValue = value.replace(/\n/g, "");
     setMessage(processedValue);
+    setSendError(false);
     Chat.setTyping(selectedRoom?.id, currentUser.uid);
     adjustTextareaHeight();
   };
@@ -228,6 +236,7 @@ export function ChatMessageForm({ repyingToMessage }: ChatMessageFormProps) {
           />
         </div>
       </div>
+      {sendError && <p role="alert" className="text-sm text-red-600">Message could not be sent. Please try again.</p>}
       {showPicker && (
         <div className="absolute bottom-20 right-6">
           <Picker

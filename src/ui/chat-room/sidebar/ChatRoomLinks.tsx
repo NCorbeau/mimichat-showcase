@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import { ChatContext } from "../../ChatContext";
 import { ChatLink } from "../../../domain/ChatLink";
-import { Chat } from "../../../app/chat";
+import { Chat } from "@chat";
 import { Icon, Tooltip } from "monday-ui-react-core";
-import Link from "monday-ui-react-core/dist/icons/Link.js";
+import { Link } from "monday-ui-react-core/icons";
 import { getPosition } from "../../mondayUtils";
 
 export function ChatRoomLinks() {
