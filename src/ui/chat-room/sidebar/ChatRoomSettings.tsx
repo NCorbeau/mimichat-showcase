@@ -1,7 +1,7 @@
 import Search from "monday-ui-react-core/dist/icons/Search.js";
 import NotificationsMuted from "monday-ui-react-core/dist/icons/NotificationsMuted.js";
 import Invite from "monday-ui-react-core/dist/icons/Invite.js";
-import Logout from "monday-ui-react-core/dist/icons/Logout.js";
+import Logout from "monday-ui-react-core/dist/icons/LogOut.js";
 import { Icon } from "monday-ui-react-core";
 import { ChatRoomLeaveModal } from "./settings/ChatRoomLeaveModal";
 import { useState, useRef, useContext } from "react";
