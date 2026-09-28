@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Chat } from "../../../app/chat";
+import { Chat } from "@chat";
 import { Loader } from "monday-ui-react-core";
 import { ChatRoot } from "./ChatRoot";
 import { ChatBoardRoot } from "../mimichat-board/ChatBoardRoot";

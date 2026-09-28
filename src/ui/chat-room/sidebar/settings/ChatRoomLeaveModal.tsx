@@ -1,5 +1,5 @@
 import { Modal, ModalContent, ModalFooterButtons, ModalHeader } from "monday-ui-react-core";
-import Logout from "monday-ui-react-core/dist/icons/LogOut.js";
+import { LogOut as Logout } from "monday-ui-react-core/icons";
 
 type ChatRoomLeaveModalProps = {
     onConfirm: () => void;

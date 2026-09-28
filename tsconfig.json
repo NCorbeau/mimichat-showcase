@@ -8,6 +8,8 @@
 
     /* Bundler mode */
     "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "paths": { "@chat": ["src/app/chatMock.ts"] },
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -20,7 +22,12 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": false
   },
-  "include": ["src", "tsconfig.json", "tsconfig.node.json"],
-  "exclude": ["src/ui/app/mimichat-main/vite.config.ts", "src/ui/app/mimichat-board/vite.config.ts"],
+  "include": [
+    "src/ui/app/mimichat-main/main.mock.tsx",
+    "src/ui/app/mimichat-board/main.mock.tsx",
+    "src/ui/app/mimichat-main/vite.config.mock.ts",
+    "src/ui/app/mimichat-board/vite.config.mock.ts",
+    "src/vite-env.d.ts"
+  ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

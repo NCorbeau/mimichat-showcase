@@ -1,7 +1,7 @@
 import './ChatMessageList.scss';
 import { createRef, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { ChatMessage } from '../../../domain';
-import { Chat } from '../../../app/chat';
+import { Chat } from '@chat';
 import { ChatMessageLine } from './line/ChatMessageLine';
 import { ChatContext } from '../../ChatContext';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
@@ -11,6 +11,8 @@ type ChatMessageWithIndex = ChatMessage;
 export function ChatMessageList() {
 
     const { selectedRoom, currentUser, userById, onChatUsersRequested, appMode } = useContext(ChatContext);
+    const roomId = selectedRoom?.id;
+    const currentUserId = currentUser?.uid;
 
     const [chatMessages, setChatMessages] = useState<ChatMessageWithIndex[]>();
     const lastMessage = chatMessages?.length ? chatMessages[chatMessages?.length - 1] : null;
@@ -29,37 +31,45 @@ export function ChatMessageList() {
         setStaticChatMessages([]);
         setLiveChatMessages(null);
 
-        if (selectedRoom === null) {
+        if (!roomId || !currentUserId) {
             setChatMessages([]);
             return;
         }
 
-        Chat.getChatMessagesCount(selectedRoom.id).then((count) => {
-            setTotalStaticMessages(count);
+        let cancelled = false;
+        Chat.getChatMessagesCount(roomId).then((count) => {
+            if (!cancelled) setTotalStaticMessages(count);
         });
 
         setLiveChatMessages([]);
-        const unsubscribe = Chat.streamChatMessages(selectedRoom.id, (chatMessages: ChatMessage[]) => {
+        const unsubscribe = Chat.streamChatMessages(roomId, (chatMessages: ChatMessage[]) => {
+            if (cancelled) return;
             const userIds = chatMessages.map((chatMessage) => chatMessage.userId);
             onChatUsersRequested(userIds);
             setLiveChatMessages(chatMessages);
-            Chat.updateLastSeen(selectedRoom.id, currentUser.uid);
+            Chat.updateLastSeen(roomId, currentUserId);
         }, 1);
-        return () => unsubscribe();
-    }, [selectedRoom]);
+        return () => {
+            cancelled = true;
+            unsubscribe();
+        };
+    }, [roomId, currentUserId, onChatUsersRequested]);
 
     useEffect(() => {
-        if (totalStaticMessages === 0) {
+        if (!roomId || totalStaticMessages === 0) {
             return;
         }
 
+        let cancelled = false;
         setStaticChatMessages([]);
-        Chat.getChatMessages(selectedRoom.id).then((chatMessages) => {
+        Chat.getChatMessages(roomId).then((chatMessages) => {
+            if (cancelled) return;
             const userIds = chatMessages.map((chatMessage) => chatMessage.userId);
             onChatUsersRequested(userIds);
             setStaticChatMessages(chatMessages);
         });
-    }, [totalStaticMessages]);
+        return () => { cancelled = true; };
+    }, [roomId, totalStaticMessages, onChatUsersRequested]);
 
     useEffect(() => {
         // The live stream sends snapshots, including messages already fetched above.
@@ -70,7 +80,7 @@ export function ChatMessageList() {
             .map((message, index) => message.withIndex(index));
 
         setChatMessages(messagesWithIndex);
-    }, [staticChatMessages, liveChatMessages, totalStaticMessages]);
+    }, [staticChatMessages, liveChatMessages]);
 
     const userHasOwnMessageInRoom = useMemo(
         () => chatMessages?.some((m) => m.userId === currentUser?.uid) ?? false,
@@ -78,25 +88,25 @@ export function ChatMessageList() {
     );
 
     useEffect(() => {
-        if (appMode !== 'board' || !selectedRoom || !currentUser?.uid) {
+        if (appMode !== 'board' || !roomId || !currentUserId) {
             setShowBoardFirstOpenHint(false);
             return;
         }
 
-        const key = `mimichat-board-first-open-hint:${currentUser.uid}:${selectedRoom.id}`;
+        const key = `mimichat-board-first-open-hint:${currentUserId}:${roomId}`;
         const dismissed = localStorage.getItem(key) === '1';
         setShowBoardFirstOpenHint(!dismissed);
-    }, [appMode, selectedRoom?.id, currentUser?.uid]);
+    }, [appMode, roomId, currentUserId]);
 
     useEffect(() => {
-        if (appMode !== 'board' || !selectedRoom || !currentUser?.uid || !userHasOwnMessageInRoom) {
+        if (appMode !== 'board' || !roomId || !currentUserId || !userHasOwnMessageInRoom) {
             return;
         }
 
-        const key = `mimichat-board-first-open-hint:${currentUser.uid}:${selectedRoom.id}`;
+        const key = `mimichat-board-first-open-hint:${currentUserId}:${roomId}`;
         localStorage.setItem(key, '1');
         setShowBoardFirstOpenHint(false);
-    }, [appMode, selectedRoom?.id, currentUser?.uid, userHasOwnMessageInRoom]);
+    }, [appMode, roomId, currentUserId, userHasOwnMessageInRoom]);
 
     const onFollowOutputHandler = useCallback(
         (atBottom) => {
@@ -106,7 +116,7 @@ export function ChatMessageList() {
                 return false;
             }
         },
-        [lastMessage]
+        [lastMessage, currentUserId]
     );
 
     const scrollToMessage = (messageId: string) => {

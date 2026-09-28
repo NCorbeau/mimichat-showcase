@@ -4,13 +4,13 @@ import { ChatMessageForm } from "./message-form/ChatMessageForm";
 import { ChatMessageList } from "./message-list/ChatMessageList";
 import { ChatRoomSidebar } from "./sidebar/ChatRoomSidebar";
 import { ChatContext } from "../ChatContext";
-import useLocalStorage from "beautiful-react-hooks/useLocalStorage";
+import { useLocalStorageState } from "../utils/useLocalStorageState";
 import { ChatMessage } from "../../domain";
 import { RoomHeaderState, ChatRoomContext } from "./ChatRoomContext";
 
 export function ChatRoomContainer() {
 
-    const [sidebarOpen, setSidebarOpen] = useLocalStorage<boolean>('mimichat-room-sidebar-open', false);
+    const [sidebarOpen, setSidebarOpen] = useLocalStorageState<boolean>('mimichat-room-sidebar-open', false);
     const [sidebarExitPending, setSidebarExitPending] = useState(false);
     const { selectedRoom, appMode } = useContext(ChatContext);
     const [headerState, setHeaderState] = useState<RoomHeaderState>('DEFAULT');

@@ -1,14 +1,18 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
+import { fileURLToPath } from "node:url";
 
-// Mock UI for board: same as main mock, but board entry uses VITE_MOCK_UI_BOARD in default config.
+const mockChat = fileURLToPath(new URL("../../../app/chatMock.ts", import.meta.url));
+
 export default defineConfig({
   plugins: [react()],
+  resolve: { alias: { '@chat': mockChat } },
   define: {
     global: {},
     "import.meta.env.VITE_MOCK_UI": JSON.stringify("true"),
   },
   envDir: "../../../../",
+  publicDir: "../../../../public",
   server: {
     port: 5174,
   },

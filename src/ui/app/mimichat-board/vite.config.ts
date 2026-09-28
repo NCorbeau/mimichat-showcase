@@ -1,9 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
+import { fileURLToPath } from 'node:url'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  resolve: { alias: { '@chat': fileURLToPath(new URL('../../../app/chat.ts', import.meta.url)) } },
   define: {
     global: {},
     // Board must not pick up VITE_MOCK_UI from the repo root .env (used for main dev:mock),

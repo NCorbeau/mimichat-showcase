@@ -1,7 +1,7 @@
 import "./ChatMessageSideButtons.scss";
 import { Dialog, DialogContentContainer, Icon, Tooltip } from "monday-ui-react-core";
-import Emoji from "monday-ui-react-core/dist/icons/Emoji.js";
-import Replay from "monday-ui-react-core/dist/icons/Replay.js";
+import { Emoji } from "monday-ui-react-core/icons";
+import { Replay } from "monday-ui-react-core/icons";
 import { useContext, useState } from "react";
 import { CHAT_MESSAGE_OVERLAY_Z_INDEX, getPosition } from "../../../../mondayUtils";
 import { ChatMessageReactions } from "./reactions/ChatMessageReactions";

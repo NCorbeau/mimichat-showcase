@@ -3,8 +3,8 @@ import { ChatMessage, ChatRoom, ChatUser } from "../../domain";
 import { CustomContentProps, SnackbarContent, closeSnackbar } from "notistack";
 import { DateTime } from "luxon";
 import { Button, IconButton } from "monday-ui-react-core";
-import Replay from "monday-ui-react-core/dist/icons/Replay.js";
-import CloseSmall from "monday-ui-react-core/dist/icons/CloseSmall.js";
+import { Replay } from "monday-ui-react-core/icons";
+import { CloseSmall } from "monday-ui-react-core/icons";
 import { getSize } from "../mondayUtils";
 
 interface ChatUserMentionNotificationProps extends CustomContentProps {

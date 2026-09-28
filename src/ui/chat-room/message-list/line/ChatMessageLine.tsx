@@ -5,7 +5,7 @@ import { ChatBubble } from "./bubble/ChatBubble";
 import { ChatRoomActionContext } from "../../ChatRoomActionContext";
 import { ChatMessageSeenIndicator } from "../message-seen/ChatMessageSeenIndicator";
 import { ChatTypingUsers } from "../typing-user/ChatTypingUsers";
-import { Chat } from "../../../../app/chat";
+import { Chat } from "@chat";
 import { ChatMessageReaction } from "../../../../domain/ChatMessageReaction";
 import { ChatUserId } from "../../../../domain/ChatUserId";
 import { ChatMessageLineContext } from "./ChatMessageLineContext";

@@ -11,7 +11,7 @@ export const useArrowKeysSelect = (onSelect: (index: number) => void) => {
             onSelect(selectedIndex);
             setConfirmed(false);
         }
-    }, [confirmed]);
+    }, [confirmed, onSelect, selectedIndex]);
 
     useKeyDown('ArrowDown', () => {
         setSelectedIndex((prev) => {

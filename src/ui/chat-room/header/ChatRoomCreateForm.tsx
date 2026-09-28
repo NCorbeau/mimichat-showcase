@@ -1,6 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { ChatUserSuggestion } from "../../../domain/ChatUserSuggestion";
-import { Chat } from "../../../app/chat";
+import { Chat } from "@chat";
 import { ChatUserSuggestionsDropdown } from "../../user/suggestions/ChatUserSuggestionsDropdown";
 import { ChatContext } from "../../ChatContext";
 

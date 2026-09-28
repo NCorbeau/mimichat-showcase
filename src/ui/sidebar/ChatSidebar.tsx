@@ -3,7 +3,7 @@ import { ChatSidebarHeader } from './header/ChatSidebarHeader';
 import { ChatRooms } from './rooms/ChatRooms';
 import { ChatSidebarSearch } from './search/ChatSidebarSearch';
 import { ResizeStick } from './ResizeStick';
-import useLocalStorage from 'beautiful-react-hooks/useLocalStorage';
+import { useLocalStorageState } from '../utils/useLocalStorageState';
 import { ChatStatus } from './status/ChatStatus';
 
 
@@ -11,7 +11,7 @@ export function ChatSidebar() {
 
     const MIN_WIDTH = 240;
 
-    const [sidebarWidth, setSidebarWidth] = useLocalStorage<number>('mimichat-sidebar-width', MIN_WIDTH);
+    const [sidebarWidth, setSidebarWidth] = useLocalStorageState<number>('mimichat-sidebar-width', MIN_WIDTH);
 
     return (
         <div style={{ width: sidebarWidth }} className="h-screen flex-shrink-0 flex min-w-60 max-w-xl">

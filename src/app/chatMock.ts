@@ -6,7 +6,8 @@ import { ChatMessageReaction } from '../domain/ChatMessageReaction';
 import { ChatUserId } from '../domain/ChatUserId';
 import { ChatUserSuggestion } from '../domain/ChatUserSuggestion';
 import { MondayBoard } from './MondayBoard';
-import { FirebaseAuth } from '../infrastructure/firebase/auth/FirebaseAuth';
+import { MockMessageStore } from './mockMessageStore';
+import { ChatCredential } from '../domain/ChatCredential';
 
 const NOOP_UNSUB = () => {};
 
@@ -67,43 +68,28 @@ const mockMessagesByRoom: Record<string, ChatMessage[]> = {
   ],
 };
 
-const messageListeners = new Map<string, Set<(messages: ChatMessage[]) => void>>();
-const lastMessageListeners = new Set<(messages: Map<string, ChatMessage>) => void>();
-
-function notifyMessages(roomId: string) {
-  const messages = [...getMockMessages(roomId)];
-  messageListeners.get(roomId)?.forEach(listener => listener(messages));
-  const latest = new Map<string, ChatMessage>();
-  Object.entries(mockMessagesByRoom).forEach(([id, roomMessages]) => {
-    if (roomMessages.length) latest.set(id, roomMessages[roomMessages.length - 1]);
-  });
-  lastMessageListeners.forEach(listener => listener(latest));
-}
+const messageStore = new MockMessageStore(mockMessagesByRoom);
 
 function getMockMessages(roomId: string): ChatMessage[] {
-  return mockMessagesByRoom[roomId] ?? [];
+  return messageStore.get(roomId);
 }
 
 const authenticate = (_token: string) => {
-  return Promise.resolve({ user: { uid: MOCK_UID } } as import('firebase/auth').UserCredential);
+  return Promise.resolve({ user: { uid: MOCK_UID } } satisfies ChatCredential);
 };
 
 const startOAuth = () => {
-  FirebaseAuth.startOAuth();
+  // The showcase never initiates a real Monday OAuth flow.
+  return Promise.resolve();
 };
 
 const addChatMessage = async (message: ChatMessage, _mentionedUsers: Map<string, ChatUser>) => {
   if (!message.text.trim() || !mockMessagesByRoom[message.roomId]) return;
-  mockMessagesByRoom[message.roomId].push(message);
-  notifyMessages(message.roomId);
+  messageStore.add(message.roomId, message);
 };
 
 const streamChatMessages = (roomId: string, onChange: (messages: ChatMessage[]) => void, _limit?: number) => {
-  const listeners = messageListeners.get(roomId) ?? new Set();
-  listeners.add(onChange);
-  messageListeners.set(roomId, listeners);
-  onChange([...getMockMessages(roomId)]);
-  return () => { listeners.delete(onChange); };
+  return messageStore.subscribe(roomId, onChange);
 };
 
 const getChatMessages = (roomId: string, _limit?: number, _beforeCreatedAt?: number) => {
@@ -111,7 +97,8 @@ const getChatMessages = (roomId: string, _limit?: number, _beforeCreatedAt?: num
 };
 
 const getChatMessageById = (messageId: string) => {
-  for (const messages of Object.values(mockMessagesByRoom)) {
+  for (const roomId of Object.keys(mockMessagesByRoom)) {
+    const messages = getMockMessages(roomId);
     const found = messages.find((m) => m.id === messageId);
     if (found) return Promise.resolve(found);
   }
@@ -125,21 +112,14 @@ const getChatMessagesCount = (roomId: string) => {
 };
 
 const streamLastRoomMessage = (roomId: string, onChange: (message: ChatMessage) => void) => {
-  const messages = getMockMessages(roomId);
-  const last = messages[messages.length - 1];
-  if (last) onChange(last);
-  return NOOP_UNSUB;
+  return messageStore.subscribe(roomId, (messages) => {
+    const last = messages[messages.length - 1];
+    if (last) onChange(last);
+  });
 };
 
 const streamLastMessageByRoom = (onChange: (lastMessageByRoom: Map<string, ChatMessage>) => void) => {
-  lastMessageListeners.add(onChange);
-  const map = new Map<string, ChatMessage>();
-  for (const [roomId, messages] of Object.entries(mockMessagesByRoom)) {
-    const last = messages[messages.length - 1];
-    if (last) map.set(roomId, last);
-  }
-  onChange(map);
-  return () => { lastMessageListeners.delete(onChange); };
+  return messageStore.subscribeLatest(onChange);
 };
 
 const updateLastRoomMessage = (_roomId: string, _message: ChatMessage) => {
@@ -398,3 +378,5 @@ export const chatMock = {
   getOrCreateBoardRoom,
   streamThemeChanges,
 };
+
+export const Chat = chatMock;

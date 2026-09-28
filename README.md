@@ -1,26 +1,45 @@
-# MimiChat — React portfolio showcase
+# MimiChat — React chat UI showcase
 
-A chat interface built for monday.com workspaces and boards. The original 2024 work includes React and TypeScript room views, message composition, mentions, reactions, search, typing and read indicators, themes, and Firebase/monday.com adapters. This repository preserves that UI work in a new history and presents it through a self-contained fictional demo.
+MimiChat is a chat interface I built in early 2024 for monday.com workspace and board views. This repository presents that React/TypeScript work through a self-contained, fictional demo. It is an independent portfolio project, not an official monday.com product.
 
-![MimiChat mock conversation](docs/demo.png)
+![MimiChat demo showing rooms and a conversation](docs/demo.png)
+
+## What to look at
+
+- Two surfaces: a workspace chat with a room list, and a board-specific conversation.
+- Message composition, mentions, emoji, replies, room previews, and read/typing UI states.
+- Domain models for messages, rooms, users, and parsed message content, separated from UI components.
+- An in-memory demo adapter that updates the active conversation and room preview when a message is sent, while retaining messages as you switch rooms.
+
+The original UI and domain work dates from 2024. In 2026 I created this showcase with fictional content, a mock adapter, focused tests, and fresh Git history. Search, reactions, notifications, room management, and service-backed behavior visible in the historical source are not functional in the demo.
 
 ## Run the demo
 
-Use Node 20 or newer:
+Use Node 20.19+ or 22.12+:
 
 ```sh
 npm ci
 npm run dev:mock
 ```
 
-Open the URL printed by Vite. For the board view, run `npm run dev:board:mock` and open its URL. Check the code with `npm run lint` and build both mock views with `npm run build`. GitHub Actions runs the same install, lint, and build commands.
+Open the URL printed by Vite. To see the board view, run `npm run dev:board:mock` in another terminal and open its URL. Both views need no account, credentials, or backend.
 
-## What this showcase changes
+```sh
+npm run lint
+npm test
+npm run build
+```
 
-The mock now keeps messages in memory, updates the active conversation and room preview when you send, and retains sent messages while you switch rooms. Message snapshots are deduplicated so existing messages appear once. The demo uses fictional people, rooms, and conversations, and the mock starts without service configuration. Controls whose mock behavior is incomplete are hidden in demo mode. The original React views and service adapters remain in the source for context.
+GitHub Actions runs these checks. `npm run build` builds both mock views. The demo store's tests cover sending a message, updating the room preview, retaining messages across room switches, and avoiding duplicate updates.
 
-## Scope and limits
+## How the showcase is separated
 
-Messages disappear on reload. There is no multi-user sync, persistence, real authentication, notification delivery, search, room management, or production service connection in the demo. The real monday.com/Firebase path is historical source and has not been configured or verified here. Do not deploy it as a production chat service. No real configuration, service credentials, or earlier Git commits are included.
+The mock Vite configurations resolve `@chat` to [`src/app/chatMock.ts`](src/app/chatMock.ts), which uses the in-memory [`MockMessageStore`](src/app/mockMessageStore.ts). The mock entry points render the workspace and board views directly. The built demo contains no Monday OAuth or Firebase adapter code.
 
-The companion authentication API is a separate project and is not part of this showcase. The inherited dependency tree reports security advisories; review and update it before using the code in a deployed product.
+The original service-backed path remains in `src/app/chat.ts` and `src/infrastructure/` as historical source for review. It is outside the showcase build and its service dependencies are not installed by `npm ci`. That path has not been configured, updated, or verified here.
+
+## Limits
+
+Messages are stored only in memory and disappear on reload. The demo does not provide real authentication, multi-user sync, persistence, notification delivery, search, room management, or a production service connection. Do not deploy it as a production chat service. No real account data, service credentials, or earlier Git history are included.
+
+The UI retains its historical monday.com design-system dependency. Review and modernize that dependency before deploying any derivative product.

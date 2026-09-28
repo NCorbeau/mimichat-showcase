@@ -2,7 +2,7 @@ import { AvatarGroup, EditableText, Tooltip } from "monday-ui-react-core";
 import { useContext, useEffect, useState } from "react";
 import { ChatContext } from "../../ChatContext";
 import { CHAT_MESSAGE_OVERLAY_Z_INDEX, getPosition, getSize } from "../../mondayUtils";
-import { Chat } from "../../../app/chat";
+import { Chat } from "@chat";
 import { ChatRoom } from "../../../domain";
 import { ChatUserAvatar } from "../../user/ChatUserAvatar";
 import "./ChatRoomInfobar.scss";

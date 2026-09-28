@@ -1,10 +1,9 @@
-import { useSearchParams } from "react-router-dom";
 import "./ChatBoardRoot.scss";
 import { ChatRoomContainer } from "../../chat-room/ChatRoomContainer";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Chat } from "../../../app/chat";
+import { Chat } from "@chat";
 import { ChatMessage, ChatRoom, ChatUser } from "../../../domain";
-import { UserCredential } from "firebase/auth";
+import { ChatCredential } from "../../../domain/ChatCredential";
 import { MondayWorkspace } from "../../../app/MondayWorkspace";
 import { ChatMessageToast } from "../../toast/ChatMessageToast";
 import { ChatContext } from "../../ChatContext";
@@ -20,7 +19,7 @@ import { AccountIdProvider } from "../../../app/AccountIdProvider";
 import { getTheme } from "../../mondayUtils";
 
 export function ChatBoardRoot() {
-  const [searchParams] = useSearchParams();
+  const urlAccessToken = new URLSearchParams(window.location.search).get('access_token');
 
   const [authorized, setAuthorized] = useState<boolean>(false);
   const [currentUser, setCurrentUser] = useState<ChatUser>(null);
@@ -49,7 +48,7 @@ export function ChatBoardRoot() {
   const [showMondayContextTimeout, setShowMondayContextTimeout] = useState<boolean>(false);
   const [showConnectModal, setShowConnectModal] = useState<boolean>(false);
   const modalAnchorRef = useRef<HTMLDivElement>(null);
-  const pendingMondayAuthRef = useRef<{ token: string; credential: UserCredential } | null>(null);
+  const pendingMondayAuthRef = useRef<{ token: string; credential: ChatCredential } | null>(null);
   const workspaceRef = useRef<MondayWorkspace | null>(null);
   const boardRef = useRef<MondayBoard | null>(null);
   workspaceRef.current = workspace;
@@ -57,19 +56,15 @@ export function ChatBoardRoot() {
 
   useEffect(() => {
     if (!authorized) {
-      let storedToken =
-        searchParams?.get("access_token") ?? localStorage.getItem("access_token");
-      if (import.meta.env.VITE_MOCK_UI === 'true' && !storedToken) {
-        storedToken = 'mock-token';
-        localStorage.setItem('access_token', storedToken);
-      }
+      const isMockUi = import.meta.env.VITE_MOCK_UI === 'true';
+      const storedToken = isMockUi ? 'mock-token' : urlAccessToken ?? localStorage.getItem("access_token");
       if (!storedToken) {
         setShowConnectModal(true);
         return;
       }
       Chat.authenticate(storedToken)
-        .then(async (userCredential: UserCredential) => {
-          localStorage.setItem("access_token", storedToken);
+        .then(async (userCredential: ChatCredential) => {
+          if (!isMockUi) localStorage.setItem("access_token", storedToken);
           pendingMondayAuthRef.current = { token: storedToken, credential: userCredential };
 
           const accountId = await Chat.waitForAccountId();
@@ -91,7 +86,7 @@ export function ChatBoardRoot() {
           setShowSessionExpired(true);
         });
     }
-  }, []);
+  }, [authorized, urlAccessToken]);
 
   useEffect(() => {
     Chat.streamThemeChanges((theme) => {
@@ -195,7 +190,7 @@ export function ChatBoardRoot() {
     if (!rooms.some((room) => room.id === selectedRoom?.id)) {
       setSelectedRoom(rooms.length > 0 ? rooms[0] : null);
     }
-  }, [rooms]);
+  }, [rooms, selectedRoom?.id]);
 
   useEffect(() => {
     if (!currentUser) {
@@ -214,7 +209,7 @@ export function ChatBoardRoot() {
       }
     );
     return () => unsubscribe();
-  }, [userById]);
+  }, [userById, currentUser]);
 
   const retryMondayAccountContext = async () => {
     setShowMondayContextTimeout(false);

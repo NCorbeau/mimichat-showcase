@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { ChatRoom } from "../../../domain";
 import { ChatContext } from "../../ChatContext";
 import { getSize, getSkeletonType } from "../../mondayUtils";
-import { Chat } from "../../../app/chat";
+import { Chat } from "@chat";
 import { ChatUserAvatar } from "../../user/ChatUserAvatar";
 import { Skeleton } from "monday-ui-react-core";
 import "./ChatRoomAvatar.scss";
