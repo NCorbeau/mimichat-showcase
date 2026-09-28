@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "monday-ui-style/dist/index.min.css";
+@import "monday-ui-style/dist/mixins";
+
+* {
+    .chat__container {
+        color: var(--primary-text-color);
+    }
+
+    .secondary {
+        color: var(--secondary-text-color);
+    }
+
+    .link {
+        color: var(--link-color);
+    }
+
+    .icon {
+        color: vaar(--icon-color);
+    }
+
+    .placeholder {
+        color: var(--placeholder-color);
+    }
+
+    .chat-status-dropdown {
+        margin-top: 4px;
+        margin-bottom: 4px;
+    }
+
+    .bg-surface {
+        // background-color: var(--color-surface);
+        background-color: #292F4CCC;
+    }
+
+    .bg-border {
+        background-color: var(--ui-border-color);
+    }
+
+    .bg-disabled-text {
+        background-color: var(--disabled-text-color);
+    }
+
+    .bg-disabled-background {
+        background-color: var(--disabled-background-color);
+    }
+
+    .bg-primary {
+        background-color: var(--primary-background-color);
+    }
+
+    .bg-secondary {
+        background-color: var(--secondary-background-color);
+    }
+
+    .bg-allgrey {
+        background-color: var(--allgrey-background-color)
+    }
+
+    .primary-hover-bg {
+        background-color: var(--primary-background-hover-color);
+    }
+
+    .primary-border {
+        border-color: var(--primary-background-color);
+    }
+
+    .primary-selected-bg {
+        background-color: var(--primary-selected-color);
+    }
+
+    .box-shadow-medium {
+        box-shadow: var(--box-shadow-medium);
+    }
+
+    .bottom-19 {
+        bottom: 72px;
+    }
+
+    // &:not(.avatar, .avatar > div, .avatar-group > div > div > div, .accordion h5, .accordion div, .tabs *, .avatar-status-indicator, div:hover) {
+        // border-color: var(--ui-border-color) !important;
+    // }
+
+    .ui-border {
+        border-color: var(--ui-border-color);
+    }
+
+    h1 {
+        @include vibe-heading(h1, normal);
+    }
+
+    h2 {
+        @include vibe-heading(h2, normal);
+    }
+}

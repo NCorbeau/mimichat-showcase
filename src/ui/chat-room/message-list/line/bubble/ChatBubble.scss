@@ -1,0 +1,19 @@
+.chat-bubble {
+    &--own {
+        background-color: var(--primary-color);
+        color: var(--text-color-on-primary);
+    }
+
+    &--other {
+        background-color: var(--allgrey-background-color);
+    }
+
+    &__replied-message {
+        background-color: var(--color-extra_light_gray);
+        margin-bottom: -8px;
+
+        &--dark {
+            background-color: var(--primary-highlighted-color);
+        }
+    }
+}

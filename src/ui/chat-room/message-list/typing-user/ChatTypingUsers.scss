@@ -1,0 +1,25 @@
+@keyframes chat-typing-user-dot-first {
+    0% {
+        opacity: 0;
+    }
+    25% {
+        opacity: 1;
+    }
+}
+
+@keyframes chat-typing-user-dot-second {
+    0% {
+        opacity: 0;
+    }
+    75% {
+        opacity: 1;
+    }
+}
+
+.chat-typing-user__animated-dot-first {
+    animation: chat-typing-user-dot-first 2s infinite;
+}
+
+.chat-typing-user__animated-dot-second {
+    animation: chat-typing-user-dot-second 2s infinite;
+}

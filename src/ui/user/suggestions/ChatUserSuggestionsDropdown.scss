@@ -1,0 +1,9 @@
+.chat-user-suggestions-dropdown {
+    box-shadow: var(--box-shadow-medium);
+
+    &__item {
+        &:hover {
+            background: var(--primary-selected-color);
+        }
+    }
+}

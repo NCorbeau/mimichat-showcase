@@ -1,0 +1,5 @@
+.chat-message-reactions__button-container {
+    &--selected {
+        background-color: var(--primary-background-hover-color);
+    }
+}

@@ -1,0 +1,46 @@
+.chat-message-form__textarea {
+  textarea {
+    resize: none !important;
+    background-color: var(--allgrey-background-color) !important;
+    outline: none;
+    padding-top: 12px !important;
+    padding-right: 36px !important;
+    max-height: 800px;
+  }
+  textarea::placeholder {
+    color: var(--secondary-text-color);
+
+  }
+  height: 100%;
+  width: 100%;
+  outline: none;
+}
+
+.chat-message-form__textarea-wrapper {
+  background-color: var(--allgrey-background-color) !important;
+  border-color: var(--ui-border-color);
+  border-radius: var(--border-radius-small);
+  border-width: 1px;
+}
+
+.chat-message-form__textarea-wrapper:hover {
+  border-color: black;
+}
+
+.chat-message-form__icon {
+  color: var(--icon-color);
+}
+
+// Same layer as CHAT_MESSAGE_OVERLAY_Z_INDEX (mondayUtils): above Virtuoso list (z-index: 1).
+.chat-message-form--picker-open {
+  z-index: 100000;
+}
+
+em-emoji-picker {
+  --border-radius: 0.5rem;
+  --font-family: var(--title-font-family);
+  --shadow: 0px 6px 20px rgba(0, 0, 0, 0.2);
+  #root {
+    background-color: var(--allgrey-background-color) !important;
+  }
+}

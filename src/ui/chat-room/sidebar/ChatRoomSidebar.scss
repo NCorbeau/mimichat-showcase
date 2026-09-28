@@ -1,0 +1,42 @@
+$chat-room-sidebar-duration: 420ms;
+
+@keyframes chat-room-sidebar-enter {
+    0% {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes chat-room-sidebar-exit {
+    0% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+}
+
+.chat-room-sidebar {
+    animation: chat-room-sidebar-enter $chat-room-sidebar-duration ease-out;
+
+    &--exiting {
+        animation: chat-room-sidebar-exit $chat-room-sidebar-duration ease-in forwards;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chat-room-sidebar {
+        animation: none;
+
+        &--exiting {
+            animation: none;
+            opacity: 0;
+        }
+    }
+}

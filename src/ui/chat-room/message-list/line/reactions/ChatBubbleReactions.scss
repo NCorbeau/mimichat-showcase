@@ -1,0 +1,32 @@
+@keyframes chat-bubble-reactions-item-pop {
+    0% {
+        transform: scale(0.94);
+    }
+    60% {
+        transform: scale(1.08);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.chat-bubble-reactions {
+    animation: chat-bubble-reactions-item-pop 180ms ease-out;
+
+    &__item {
+        transition: transform 120ms ease-out;
+
+        &--animate {
+            animation: chat-bubble-reactions-item-pop 220ms ease-out;
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chat-bubble-reactions,
+    .chat-bubble-reactions__item,
+    .chat-bubble-reactions__item--animate {
+        animation: none;
+        transition: none;
+    }
+}
